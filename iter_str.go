@@ -113,7 +113,7 @@ func (iter *Iterator) readEscapedChar(c byte, str []byte) []byte {
 
 // ReadStringAsSlice read string from iterator without copying into string form.
 // The []byte can not be kept, as it will change after next iterator call.
-func (iter *Iterator) ReadStringAsSlice(alphabetOnly bool) (ret []byte) {
+func (iter *Iterator) ReadStringAsSlice() (ret []byte) {
 	c := iter.nextToken()
 	if c == '"' {
 		for i := iter.head; i < iter.tail; i++ {
@@ -125,32 +125,15 @@ func (iter *Iterator) ReadStringAsSlice(alphabetOnly bool) (ret []byte) {
 				ret = iter.buf[iter.head:i]
 				iter.head = i + 1
 				return ret
-			}
-			if alphabetOnly {
-				continue
-			}
-			if c == '\\' {
+			} else if c == '\\' {
 				return iter.readStringAsSliceSlowPath()
-			}
-			if c < ' ' {
-				iter.ReportError("ReadStringAsSlice",
-					fmt.Sprintf(`invalid control character found: %d`, c))
+			} else if c < ' ' {
+				iter.ReportError("ReadStringAsSlice", fmt.Sprintf(`invalid control character found: %d`, c))
 				return
 			}
 		}
-		readLen := iter.tail - iter.head
-		copied := make([]byte, readLen, readLen*2)
-		copy(copied, iter.buf[iter.head:iter.tail])
-		iter.head = iter.tail
-		for iter.Error == nil {
-			c := iter.readByte()
-			if c == '"' {
-				return copied
-			}
-			copied = append(copied, c)
-		}
-		return copied
-	} else if !alphabetOnly && c == 'n' {
+		return iter.readStringAsSliceSlowPath()
+	} else if c == 'n' {
 		iter.skipThreeBytes('u', 'l', 'l')
 		return
 	}
