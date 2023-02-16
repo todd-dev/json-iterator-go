@@ -1,4 +1,4 @@
-module github.com/todd-dev/json-iterator-go
+module github.com/json-iterator/go
 
 go 1.12
 
