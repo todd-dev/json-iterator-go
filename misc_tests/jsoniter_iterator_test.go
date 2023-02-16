@@ -21,7 +21,7 @@ func Test_bad_case(t *testing.T) {
 			for iter.ReadArray() {
 				for field := iter.ReadObject(); field != ""; field = iter.ReadObject() {
 					if field == "Bit" {
-						iter.ReadStringAsSlice(true)
+						iter.ReadStringAsSlice()
 					} else {
 						if field != "Size" && field != "EndIndex" && field != "EndMask" && field != "Good" && field != "Flush" {
 							t.Fatal(field)
@@ -81,7 +81,7 @@ func Test_iterator_ReadStringAsSlice(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			should := require.New(t)
 			iter := jsoniter.ParseString(jsoniter.ConfigDefault, tt.input)
-			actual := iter.ReadStringAsSlice(false)
+			actual := iter.ReadStringAsSlice()
 			should.NoError(iter.Error)
 			should.Equal(tt.expected, actual)
 		})
@@ -106,7 +106,7 @@ func Test_iterator_ReadStringAsSlice_ascii_and_noescape(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			should := require.New(t)
 			iter := jsoniter.ParseString(jsoniter.ConfigDefault, tt.input)
-			actual := iter.ReadStringAsSlice(true)
+			actual := iter.ReadStringAsSlice()
 			should.Equal(tt.expected, actual)
 			if tt.expectedErr {
 				should.Error(iter.Error)
