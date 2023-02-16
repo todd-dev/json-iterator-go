@@ -520,7 +520,7 @@ func (decoder *generalStructDecoder) decodeOneField(ptr unsafe.Pointer, iter *It
 	var field string
 	var fieldDecoder *structFieldDecoder
 	if iter.cfg.objectFieldMustBeSimpleString {
-		fieldBytes := iter.ReadStringAsSlice(true)
+		fieldBytes := iter.ReadStringAsSlice()
 		field = *(*string)(unsafe.Pointer(&fieldBytes))
 		fieldDecoder = decoder.fields[field]
 		if fieldDecoder == nil && !iter.cfg.caseSensitive {
